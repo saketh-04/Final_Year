@@ -1,0 +1,54 @@
+# =============================================================================
+# HumanMM — Tracker Configuration  (v4 — detection-first, no drift)
+# =============================================================================
+backend: "bytetrack"
+
+bytetrack:
+  track_thresh: 0.50           # Match raised detector confidence
+  new_track_thresh: 0.55
+  low_match_thresh: 0.35
+  min_hits_to_confirm: 3
+  track_buffer: 30
+  iou_thresh: 0.30
+  centroid_thresh: 0.22        # ~280px on 1280px frame
+
+  kalman_process_noise: 0.05
+  kalman_measurement_noise: 0.05
+  adaptive_measurement_noise: true
+  adaptive_noise_scale: 2.0
+
+  appearance_matching_enabled: true
+  appearance_weight: 0.20
+  appearance_hist_bins: 24
+
+  ghost_max_age: 4
+  ghost_min_conf: 0.50
+
+deepsort:
+  max_dist: 0.30
+  max_iou_distance: 0.70
+  max_age: 30
+  n_init: 3
+  nn_budget: 100
+  reid_model: "osnet_x0_25"
+  reid_weights: null
+
+common:
+  min_track_length: 3
+  max_persons: 10
+  id_persistence: true
+
+viz:
+  bbox_thickness: 2
+  use_track_color: true
+  fallback_bbox_color: [0, 230, 50]
+  show_track_id: true
+  show_confidence: true
+  trail_enabled: true
+  trail_length: 20
+  trail_fade: true
+  show_fps: true
+  show_frame_number: true
+  show_active_count: true
+  predicted_dash: true
+  predicted_fill_alpha: 0.10

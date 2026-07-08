@@ -1,0 +1,96 @@
+# =============================================================================
+# HumanMM — Pose Estimator Configuration
+# Backends: mediapipe | vitpose (default)
+# =============================================================================
+
+backend: "vitpose"               # mediapipe | vitpose
+
+# -------------------------------------------------------------------------
+# MediaPipe Pose Settings
+# -------------------------------------------------------------------------
+mediapipe:
+  model_complexity: 1             # 0 (lite) | 1 (full) | 2 (heavy)
+  smooth_landmarks: true          # Temporal landmark smoothing
+  enable_segmentation: false      # Human silhouette segmentation
+  smooth_segmentation: true
+  min_detection_confidence: 0.50
+  min_tracking_confidence: 0.50
+  static_image_mode: false        # false = video mode (faster)
+
+  # Keypoint topology (COCO-17 compatible subset from MediaPipe 33 kpts)
+  output_format: "coco17"         # coco17 | mediapipe33
+  joints:                         # COCO-17 joint names (for reference)
+    - nose              # 0
+    - left_eye          # 1
+    - right_eye         # 2
+    - left_ear          # 3
+    - right_ear         # 4
+    - left_shoulder     # 5
+    - right_shoulder    # 6
+    - left_elbow        # 7
+    - right_elbow       # 8
+    - left_wrist        # 9
+    - right_wrist       # 10
+    - left_hip          # 11
+    - right_hip         # 12
+    - left_knee         # 13
+    - right_knee        # 14
+    - left_ankle        # 15
+    - right_ankle       # 16
+
+  # Skeleton connectivity (for drawing)
+  skeleton_pairs:
+    - [0, 1]    # nose → left_eye
+    - [0, 2]    # nose → right_eye
+    - [1, 3]    # left_eye → left_ear
+    - [2, 4]    # right_eye → right_ear
+    - [5, 6]    # left_shoulder → right_shoulder
+    - [5, 7]    # left_shoulder → left_elbow
+    - [7, 9]    # left_elbow → left_wrist
+    - [6, 8]    # right_shoulder → right_elbow
+    - [8, 10]   # right_elbow → right_wrist
+    - [5, 11]   # left_shoulder → left_hip
+    - [6, 12]   # right_shoulder → right_hip
+    - [11, 12]  # left_hip → right_hip
+    - [11, 13]  # left_hip → left_knee
+    - [13, 15]  # left_knee → left_ankle
+    - [12, 14]  # right_hip → right_knee
+    - [14, 16]  # right_knee → right_ankle
+
+# -------------------------------------------------------------------------
+# ViTPose Settings (GPU recommended, CVPR-quality)
+# -------------------------------------------------------------------------
+vitpose:
+  model_name: "ViTPose-H"         # Primary model for highest accuracy
+  fallback_model: "RTMPose-X"     # High-performance fallback
+  config_path: null               # null = use bundled default config
+  checkpoint_path: null           # null = auto-download from mmpose hub
+  input_size: [192, 256]          # [width, height] for pose crop
+  flip_test: false                # Horizontal flip augmentation
+  use_gt_bbox: false              # false = use YOLO boxes
+  bbox_thr: 0.50
+
+# -------------------------------------------------------------------------
+# Common Settings & Temporal Filtering
+# -------------------------------------------------------------------------
+common:
+  confidence_threshold: 0.30     # Min joint visibility confidence
+  normalize_output: false        # Normalize to [0, 1] image coordinates
+  device: null                   # null → inherit from global config
+
+temporal_filter:
+  enabled: true                  # Use OneEuro temporal smoothing for stability
+  min_cutoff: 0.8                # Cutoff for slow movements (lower = smoother)
+  beta: 0.05                     # Cutoff slope for fast movements (higher = less lag)
+  d_cutoff: 1.0                  # Derivative cutoff frequency
+
+# -------------------------------------------------------------------------
+# Visualization
+# -------------------------------------------------------------------------
+viz:
+  joint_radius: 5
+  joint_color_scheme: "heatmap"   # solid | heatmap | confidence
+  joint_color: [0, 255, 255]      # BGR — cyan (used if solid)
+  skeleton_color: [255, 128, 0]   # BGR — orange
+  skeleton_thickness: 2
+  show_confidence: true

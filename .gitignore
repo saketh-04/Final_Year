@@ -1,0 +1,30 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Outputs
+outputs/
+logs/
+
+# Model weights
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Datasets
+data/
+datasets/
+
+# Temporary
+*.log
+*.tmp

@@ -1,0 +1,146 @@
+# ============================================================
+# HumanMM: Global Human Motion Recovery from Multi-Shot Videos
+# requirements.txt — Production Dependencies
+# Python 3.10 | PyTorch 2.x | CUDA 11.8+
+# ============================================================
+
+# ------------------------------------------------------------------
+# Core Deep Learning
+# ------------------------------------------------------------------
+torch>=2.1.0
+torchvision>=0.16.0
+torchaudio>=2.1.0
+
+# ------------------------------------------------------------------
+# Computer Vision
+# ------------------------------------------------------------------
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+Pillow>=10.0.0
+
+# ------------------------------------------------------------------
+# Human Detection
+# ------------------------------------------------------------------
+ultralytics>=8.0.200          # YOLOv8
+
+# ------------------------------------------------------------------
+# Shot Boundary Detection
+# ------------------------------------------------------------------
+scenedetect[opencv]>=0.6.3    # PySceneDetect
+
+# ------------------------------------------------------------------
+# Pose Estimation — MediaPipe (default backend)
+# ------------------------------------------------------------------
+mediapipe==0.10.14
+
+# ------------------------------------------------------------------
+# Pose Estimation — ViTPose (optional, GPU-recommended)
+# Note: mmpose/mmcv must be installed with matching CUDA version.
+# See docs/installation.md for ViTPose-specific setup.
+# ------------------------------------------------------------------
+# mmcv>=2.1.0                 # Uncomment for ViTPose
+# mmpose>=1.3.0               # Uncomment for ViTPose
+# mmdet>=3.2.0                # Uncomment for ViTPose
+
+# ------------------------------------------------------------------
+# 3D Human Motion Recovery — 4D-Humans (HMR 2.0)
+# ------------------------------------------------------------------
+# Install via: pip install git+https://github.com/shubham-goel/4D-Humans
+# Or install from the local clone added as submodule.
+# The wrapper in models/gvhmr_wrapper.py supports both.
+# smplx>=0.1.28               # SMPL body model
+# plyfile>=1.0.2              # PLY mesh I/O (also via trimesh)
+
+# ------------------------------------------------------------------
+# 3D Math & Scientific Computing
+# ------------------------------------------------------------------
+numpy>=1.24.0
+scipy>=1.11.0
+scikit-learn>=1.3.0
+
+# ------------------------------------------------------------------
+# Data Management
+# ------------------------------------------------------------------
+pandas>=2.1.0
+h5py>=3.9.0
+
+# ------------------------------------------------------------------
+# Configuration Management
+# ------------------------------------------------------------------
+hydra-core>=1.3.2
+omegaconf>=2.3.0
+PyYAML>=6.0.1
+
+# ------------------------------------------------------------------
+# Progress & Logging
+# ------------------------------------------------------------------
+tqdm>=4.66.0
+rich>=13.6.0                  # Rich console output
+loguru>=0.7.0                 # Structured logging
+
+# ------------------------------------------------------------------
+# 3D Visualization & Mesh I/O
+# ------------------------------------------------------------------
+trimesh>=4.0.0                # .ply, .obj mesh I/O
+pyrender>=0.1.45              # 3D mesh rendering (optional)
+matplotlib>=3.8.0             # Trajectory plots, 3D scatter
+open3d>=0.18.0                # Point cloud visualization (optional)
+
+# ------------------------------------------------------------------
+# Kalman Filter
+# ------------------------------------------------------------------
+filterpy>=1.4.5               # Kalman filtering for trajectories
+
+# ------------------------------------------------------------------
+# Signal Processing
+# ------------------------------------------------------------------
+# scipy already provides savitzky_golay filter
+# Additional DSP utilities:
+PyWavelets>=1.5.0             # Wavelet-based smoothing (optional)
+
+# ------------------------------------------------------------------
+# GIF / Animation Export
+# ------------------------------------------------------------------
+imageio>=2.33.0
+imageio-ffmpeg>=0.4.9
+
+# ------------------------------------------------------------------
+# Performance Profiling
+# ------------------------------------------------------------------
+psutil>=5.9.0                 # CPU / Memory usage
+gputil>=1.4.0                 # GPU usage monitoring
+py-cpuinfo>=9.0.0             # CPU info
+
+# ------------------------------------------------------------------
+# Testing
+# ------------------------------------------------------------------
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
+# ------------------------------------------------------------------
+# Code Quality
+# ------------------------------------------------------------------
+black>=23.11.0
+flake8>=6.1.0
+isort>=5.12.0
+mypy>=1.6.0
+
+# ------------------------------------------------------------------
+# ByteTrack Linear Assignment
+# ------------------------------------------------------------------
+lap>=0.4.0                    # Jonker-Volgenant algorithm (fast LAP)
+# If lap fails to build, use lapjv as fallback:
+# lapjv>=1.3.14
+
+# ------------------------------------------------------------------
+# Rotation / Quaternion Math
+# ------------------------------------------------------------------
+transforms3d>=0.4.1           # Euler, quaternion, rotation utilities
+roma>=1.4.0                   # Robust rotation averaging
+
+# ------------------------------------------------------------------
+# Packaging
+# ------------------------------------------------------------------
+setuptools>=68.0.0
+wheel>=0.41.0

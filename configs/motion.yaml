@@ -1,0 +1,61 @@
+# =============================================================================
+# HumanMM — Motion Recovery Configuration
+# Backend: HMR 2.0 (4D-Humans) — SMPL body model inference
+# =============================================================================
+
+backend: "hmr2"                    # hmr2 | gvhmr (if gvhmr is installed)
+
+# -------------------------------------------------------------------------
+# HMR 2.0 (4D-Humans) Settings
+# -------------------------------------------------------------------------
+hmr2:
+  # Model checkpoint
+  checkpoint: null                 # null = auto-download from HuggingFace
+  model_name: "4DHumans"          # Model identifier on HF hub
+  hf_repo_id: "shubham-goel/4D-Humans"
+
+  # Body model
+  smpl_dir: "data/models/smpl"    # Directory containing SMPL .pkl files
+  # Download from: https://smplify.is.tue.mpg.de/
+
+  # Inference settings
+  batch_size: 1                   # Persons per batch
+  img_size: 256                   # Input crop size for HMR
+  rescale_factor: 1.20           # BBox rescaling for person crop
+  apply_crop_augmentation: false  # Test-time augmentation
+
+  # Output parameters
+  output_joints: 17               # 17-joint COCO-skeleton output
+  output_smpl_params: true        # Return SMPL betas/poses/global_orient
+  output_vertices: true           # Return mesh vertices (6890 for SMPL)
+  output_camera: true             # Return weak-perspective camera params
+
+# -------------------------------------------------------------------------
+# GVHMR Settings (optional — requires separate installation)
+# -------------------------------------------------------------------------
+gvhmr:
+  checkpoint: null
+  config_path: null
+  use_world_grounding: true       # Enable world-grounded trajectory
+  gravity_axis: "y"               # y | z (world up-axis convention)
+
+# -------------------------------------------------------------------------
+# Common Settings
+# -------------------------------------------------------------------------
+common:
+  device: null                    # null → inherit from global config
+  half_precision: false
+  min_bbox_area: 2000            # Skip crops smaller than this (pixels²)
+  max_persons_per_frame: 5       # Performance limit
+
+# -------------------------------------------------------------------------
+# 3D Output
+# -------------------------------------------------------------------------
+output_3d:
+  coordinate_system: "camera"    # camera | world
+  root_joint: "pelvis"           # Joint used as trajectory root
+  fps_output: 30                 # Output motion FPS (resample if needed)
+
+  # Mesh export
+  mesh_format: ["ply", "obj"]    # Export formats
+  mesh_color: [0.65, 0.74, 0.86] # Default mesh color (RGB float)

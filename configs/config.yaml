@@ -1,0 +1,133 @@
+# =============================================================================
+# HumanMM — Master Configuration File
+# Managed by Hydra (https://hydra.cc)
+# Override any value on the CLI: python main.py video.path=demo.mp4
+# =============================================================================
+
+# Hydra meta-config
+defaults:
+  - _self_
+  - detector: detector
+  - tracker: tracker
+  - pose: pose
+  - motion: motion
+  - visualization: visualization
+
+# =============================================================================
+# Video Input
+# =============================================================================
+video:
+  path: "data/input/demo.mp4"        # Input video path (override via CLI)
+  max_frames: -1                     # -1 = process all frames
+  start_frame: 0                     # Start from this frame
+  end_frame: -1                      # End at this frame (-1 = video end)
+  frame_step: 1                      # Process every Nth frame (1 = all)
+  resize_width: 1280                 # Resize width for processing (0 = original)
+  resize_height: 720                 # Resize height (0 = original)
+
+# =============================================================================
+# Output
+# =============================================================================
+output:
+  root_dir: "outputs"                # Root output directory
+  save_frames: false                 # Save individual extracted frames
+  save_json: true                    # Save results as JSON
+  save_mesh: false                   # Save 3D meshes (PLY/OBJ)
+  save_video: true                   # Save pipeline stage videos
+  save_gif: false                    # Save GIF animations
+  save_csv: true                     # Save trajectory CSV
+  save_npy: true                     # Save joint arrays as NPY
+  show_fps: true                     # Overlay FPS on output videos
+  video_codec: "mp4v"                # OpenCV FourCC codec
+  video_fps: 30                      # Output video FPS
+  gif_fps: 15                        # GIF frame rate
+  gif_max_frames: 100                # Max frames for GIF export
+
+# =============================================================================
+# Compute Device
+# =============================================================================
+device:
+  backend: "auto"                    # auto | cuda | cpu
+  gpu_id: 0                          # GPU index (for multi-GPU systems)
+  num_workers: 4                     # DataLoader workers
+  pin_memory: true                   # Pin CPU memory for GPU transfer
+  mixed_precision: false             # AMP (auto mixed precision)
+
+# =============================================================================
+# Pipeline Control
+# =============================================================================
+pipeline:
+  run_shot_detection: true           # Enable/disable shot boundary detection
+  run_tracking: true                 # Enable/disable multi-person tracking
+  run_pose_estimation: true          # Enable/disable 2D pose estimation
+  run_motion_recovery: true          # Enable/disable 3D motion recovery
+  run_trajectory_alignment: true     # Enable/disable cross-shot alignment
+  run_visualization: true            # Enable/disable visualization
+  run_export: true                   # Enable/disable exporter
+
+  # Graceful degradation: if a stage fails, continue pipeline or halt?
+  fail_fast: false                   # false = log error, skip stage, continue
+  max_persons: 10                    # Maximum concurrent persons to track
+
+# =============================================================================
+# Logging
+# =============================================================================
+logging:
+  level: "INFO"                      # DEBUG | INFO | WARNING | ERROR
+  log_dir: "outputs/logs"
+  log_file: "pipeline.log"
+  metrics_file: "metrics.log"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level:<8} | {name}:{function}:{line} | {message}"
+  colorize: true
+  rotation: "10 MB"                  # Rotate log after 10 MB
+  retention: "7 days"
+
+# =============================================================================
+# Performance Monitoring
+# =============================================================================
+metrics:
+  enabled: true
+  track_gpu: true                    # Monitor GPU memory & utilization
+  track_cpu: true                    # Monitor CPU usage
+  track_ram: true                    # Monitor RAM usage
+  sample_interval_sec: 1.0          # Sampling interval for resource monitors
+  output_file: "outputs/metrics.json"
+
+# =============================================================================
+# Trajectory Alignment (Original Implementation)
+# =============================================================================
+alignment:
+  # Interpolation for missing detections
+  interpolation_method: "cubic"      # linear | cubic | nearest
+  max_gap_frames: 30                 # Max frames to interpolate across
+
+  # Smoothing parameters
+  moving_average_window: 5          # Frames for moving average
+  gaussian_sigma: 1.5               # Sigma for Gaussian temporal smooth
+  savgol_window: 11                  # Savitzky-Golay filter window (odd)
+  savgol_polyorder: 3               # Polynomial order for SG filter
+
+  # Rotation smoothing
+  rotation_smooth_window: 7         # Frames for rotation SLERP smoothing
+
+  # Cross-shot alignment
+  shot_overlap_frames: 15           # Overlap window for Procrustes alignment
+  blend_weight_type: "cosine"        # linear | cosine | none
+  procrustes_allow_scale: false      # Allow scale in Procrustes alignment
+
+  # Kalman filter (optional)
+  use_kalman: false                  # Enable Kalman filter post-processing
+  kalman_process_noise: 0.001
+  kalman_measurement_noise: 0.1
+
+# =============================================================================
+# Hydra runtime (do not modify unless you know what you are doing)
+# =============================================================================
+hydra:
+  run:
+    dir: outputs/hydra/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: outputs/multirun/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${hydra.job.num}
+  job:
+    chdir: false

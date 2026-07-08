@@ -1,0 +1,53 @@
+# =============================================================================
+# HumanMM — Detector Configuration  (v4 — false positive suppression)
+# =============================================================================
+model_name: "yolo11n.pt"
+fallback_model_name: "yolov8n.pt"
+use_segmentation: true
+segmentation_model_name: "yolo11n-seg.pt"
+segmentation_fallback_model_name: "yolov8n-seg.pt"
+auto_download: true
+
+# ── Confidence — raised to cut background persons behind fence ────────────
+confidence_threshold: 0.50       # Was 0.40; fence reflections rarely hit >0.50
+iou_threshold: 0.45
+person_class_id: 0
+max_detections: 10               # Reduced: only real persons expected
+
+input_size: 640
+half_precision: false
+augment: false
+device: null
+
+show_all_classes: true
+non_person_conf_threshold: 0.55  # Higher bar for non-person labels
+
+# ── Geometric filters ─────────────────────────────────────────────────────
+min_bbox_area: 3000              # ~55x55px minimum — eliminates fence fragments
+min_aspect_ratio: 0.20           # Taller than wide (persons are vertical)
+max_aspect_ratio: 5.0
+
+# ── Box refinement ────────────────────────────────────────────────────────
+box_refinement:
+  enabled: true
+  mode: "mask"
+  mask_padding_px: 8
+  margin_trim_ratio: 0.0
+  min_refined_area_ratio: 0.25
+
+temporal_smoothing:
+  enabled: false
+
+expose_latency_metrics: true
+
+# ── Visualization ──────────────────────────────────────────────────────────
+person_bbox_color: [0, 230, 50]
+person_bbox_thickness: 2
+other_bbox_color: [255, 165, 0]
+other_bbox_thickness: 1
+label_font_scale: 0.52
+show_confidence: true
+show_class_name: true
+show_frame_number: true
+show_latency: true
+show_fps: true

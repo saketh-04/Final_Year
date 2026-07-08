@@ -1,0 +1,122 @@
+# =============================================================================
+# HumanMM — Visualization Configuration  (v3 — research-quality)
+# =============================================================================
+
+global:
+  output_fps: 30
+  output_width: 1280
+  output_height: 720
+  video_codec: "mp4v"
+  font: "FONT_HERSHEY_SIMPLEX"
+  font_scale: 0.7
+  font_thickness: 2
+  overlay_alpha: 0.6
+  show_fps: true
+
+# ─── Detection ────────────────────────────────────────────────────────────────
+detection:
+  enabled: true
+  bbox_color: [0, 230, 50]       # Bright green
+  bbox_thickness: 2
+  show_confidence: true
+  show_class: true
+  show_frame_number: true
+  background_fill: false
+
+# ─── Tracking ─────────────────────────────────────────────────────────────────
+tracking:
+  enabled: true
+  use_track_color: true
+  show_track_id: true
+  show_confidence: true
+  show_fps: true
+  show_latency: false
+  show_frame_number: true
+  trail_enabled: true
+  trail_length: 20
+  trail_fade: true
+
+# ─── Pose (2D Skeleton) ───────────────────────────────────────────────────────
+pose:
+  enabled: true
+  joint_radius: 8                # LARGER joints — clearly visible
+  joint_color_scheme: "solid"    # CHANGED from heatmap → solid bright colors
+  joint_solid_color: [0, 255, 255]  # Cyan joints
+  skeleton_color: [255, 165, 0]  # Orange limb lines
+  skeleton_thickness: 3          # THICKER — more visible
+  show_joint_index: false
+  alpha: 1.0                     # FULL opacity — no blending
+  confidence_threshold: 0.0      # Draw ALL joints regardless of confidence
+  use_track_color: false         # Consistent cyan/orange regardless of ID
+
+# ─── 3D Mesh / Joint Projection ───────────────────────────────────────────────
+mesh:
+  enabled: true
+  renderer: "pyrender"
+  background_color: [0.1, 0.1, 0.1]
+  mesh_color: [0.65, 0.74, 0.86]
+  wireframe: false
+  ambient_light: 0.5
+  directional_light: 1.0
+  camera_distance: 2.5
+  camera_elevation_deg: 10
+  camera_azimuth_deg: 0
+  render_resolution: [512, 512]
+  project_to_image: true
+  overlay_alpha: 0.75
+
+  # Pseudo-3D fallback (when GVHMR/pyrender not available)
+  # Draws a visible 3D skeleton projection anchored to the detection box
+  fallback_joint_radius: 6
+  fallback_line_thickness: 2
+  fallback_joint_color: [180, 200, 220]  # Light blue-grey (like reference mesh)
+  fallback_line_color: [160, 180, 200]
+
+# ─── Trajectory ───────────────────────────────────────────────────────────────
+trajectory:
+  enabled: true
+  plot_3d: true
+  plot_2d_projections: false     # Disabled — saves space
+  show_shot_boundaries: true
+  color_by_person: true
+  line_width: 2
+  marker_size: 4
+  figure_dpi: 100
+
+# ─── Research Demo Side-by-Side (07_final) ────────────────────────────────────
+comparison:
+  enabled: true
+  panels:
+    - "original"
+    - "detection"
+    - "pose"
+    - "mesh"
+  panel_border: 2
+  border_color: [50, 50, 50]
+  header_height: 36
+  header_color: [15, 15, 15]
+  header_text_color: [220, 220, 220]
+  show_stage_labels: true
+  panel_width: 640
+  panel_height: 360
+
+  # Right canvas skeleton settings (ResearchDemoRenderer)
+  pose_conf_threshold: 0.0       # Draw ALL joints on white canvas
+  canvas_bg_color: [255, 255, 255]  # White background
+  canvas_joint_radius: 8
+  canvas_line_thickness: 3
+  divider_color: [180, 180, 180]
+
+# ─── FPS Counter ──────────────────────────────────────────────────────────────
+fps_overlay:
+  enabled: true
+  position: "top_right"
+  bg_color: [0, 0, 0]
+  text_color: [0, 255, 0]
+  alpha: 0.5
+
+# ─── Shot Indicator ───────────────────────────────────────────────────────────
+shot_indicator:
+  enabled: true
+  flash_color: [255, 0, 255]
+  flash_duration_frames: 3
