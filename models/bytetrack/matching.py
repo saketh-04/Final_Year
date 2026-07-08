@@ -87,3 +87,67 @@ def bbox_iou(
     union = area_a + area_b - inter
 
     return inter / np.clip(union, 1e-6, None)
+
+def iou_distance(
+    tracks: List,
+    detections: List,
+) -> np.ndarray:
+    """
+    Compute IoU-based cost matrix.
+
+    Cost = 1 - IoU
+
+    Compatible with:
+        - Track objects
+        - Detection objects
+        - Raw numpy XYXY arrays
+
+    Args:
+        tracks:
+            Existing tracks.
+
+        detections:
+            Current detections.
+
+    Returns:
+        Cost matrix of shape (N_tracks, N_detections).
+    """
+
+    if len(tracks) == 0 or len(detections) == 0:
+        return np.zeros(
+            (len(tracks), len(detections)),
+            dtype=np.float32,
+        )
+
+    # Already numpy arrays
+    if isinstance(tracks[0], np.ndarray):
+        track_boxes = np.asarray(tracks, dtype=np.float32)
+
+    else:
+        track_boxes = np.asarray(
+            [
+                t.tlbr if hasattr(t, "tlbr")
+                else t.bbox
+                for t in tracks
+            ],
+            dtype=np.float32,
+        )
+
+    if isinstance(detections[0], np.ndarray):
+        det_boxes = np.asarray(
+            detections,
+            dtype=np.float32,
+        )
+
+    else:
+        det_boxes = np.asarray(
+            [
+                d.bbox
+                for d in detections
+            ],
+            dtype=np.float32,
+        )
+
+    iou = bbox_iou(track_boxes, det_boxes)
+
+    return 1.0 - iou
