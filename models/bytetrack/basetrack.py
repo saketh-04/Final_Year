@@ -44,13 +44,15 @@ class BaseTrack(ABC):
         time_since_update (int): Number of frames since the last detection update.
     """
     
-    _count: int = 0
+    from typing import ClassVar
+
+    _count: ClassVar[int] = 0
 
     track_id: int = 0
     is_activated: bool = False
     state: TrackState = TrackState.New
     
-    history: List[np.ndarray] = field(default_factory=list, repr=False)
+    history: List[Any] = field(default_factory=list, repr=False)
     features: List[np.ndarray] = field(default_factory=list, repr=False)
     
     start_frame: int = 0
@@ -160,3 +162,21 @@ class BaseTrack(ABC):
     def __repr__(self) -> str:
         """String representation of the track instance."""
         return f"OT_{self.track_id}_({self.start_frame}-{self.end_frame})"
+
+        @property
+    def active(self) -> bool:
+        """Return True if the track is currently active."""
+        return (
+            self.state == TrackState.Tracked
+            and self.is_activated
+        )
+
+
+    def is_lost(self) -> bool:
+        """Return True if the track is lost."""
+        return self.state == TrackState.Lost
+
+
+    def is_removed(self) -> bool:
+        """Return True if the track has been removed."""
+        return self.state == TrackState.Removed
