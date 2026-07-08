@@ -35,3 +35,55 @@ __all__ = [
     "gate_cost_matrix",
     "fuse_motion",
 ]
+
+def bbox_iou(
+    boxes_a: np.ndarray,
+    boxes_b: np.ndarray,
+) -> np.ndarray:
+    """
+    Compute pairwise IoU between two sets of bounding boxes.
+
+    Args:
+        boxes_a:
+            Array of shape (N, 4) in XYXY format.
+        boxes_b:
+            Array of shape (M, 4) in XYXY format.
+
+    Returns:
+        IoU matrix of shape (N, M).
+    """
+    if len(boxes_a) == 0 or len(boxes_b) == 0:
+        return np.zeros((len(boxes_a), len(boxes_b)), dtype=np.float32)
+
+    boxes_a = boxes_a.astype(np.float32)
+    boxes_b = boxes_b.astype(np.float32)
+
+    # Top-left corner of intersection
+    tl = np.maximum(
+        boxes_a[:, None, :2],
+        boxes_b[None, :, :2],
+    )
+
+    # Bottom-right corner of intersection
+    br = np.minimum(
+        boxes_a[:, None, 2:],
+        boxes_b[None, :, 2:],
+    )
+
+    wh = np.clip(br - tl, a_min=0.0, a_max=None)
+
+    inter = wh[..., 0] * wh[..., 1]
+
+    area_a = (
+        (boxes_a[:, 2] - boxes_a[:, 0]) *
+        (boxes_a[:, 3] - boxes_a[:, 1])
+    )[:, None]
+
+    area_b = (
+        (boxes_b[:, 2] - boxes_b[:, 0]) *
+        (boxes_b[:, 3] - boxes_b[:, 1])
+    )[None, :]
+
+    union = area_a + area_b - inter
+
+    return inter / np.clip(union, 1e-6, None)
