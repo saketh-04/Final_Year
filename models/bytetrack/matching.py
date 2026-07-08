@@ -204,3 +204,67 @@ def linear_assignment(
         unmatched_tracks,
         unmatched_detections,
     )
+
+def gate_cost_matrix(
+    kf: KalmanFilter,
+    cost_matrix: np.ndarray,
+    tracks: List,
+    detections: List,
+    only_position: bool = False,
+) -> np.ndarray:
+    """
+    Apply Kalman gating to invalidate impossible associations.
+
+    Any detection lying outside the Mahalanobis gating threshold
+    is assigned an infinite matching cost.
+
+    Args:
+        kf:
+            Kalman filter instance.
+
+        cost_matrix:
+            IoU cost matrix.
+
+        tracks:
+            Active tracks.
+
+        detections:
+            Current detections.
+
+        only_position:
+            Gate only x,y coordinates.
+
+    Returns:
+        Updated cost matrix.
+    """
+
+    if cost_matrix.size == 0:
+        return cost_matrix
+
+    gating_dim = 2 if only_position else 4
+    gating_threshold = kf.chi2inv95[gating_dim]
+
+    measurements = np.asarray(
+        [
+            d.bbox_xywh
+            for d in detections
+        ],
+        dtype=np.float32,
+    )
+
+    # Convert xywh -> xyah
+    measurements[:, 2] /= np.maximum(measurements[:, 3], 1e-6)
+
+    for row, track in enumerate(tracks):
+
+        gating_distance = kf.gating_distance(
+            track.mean,
+            track.covariance,
+            measurements,
+            only_position=only_position,
+            metric="maha",
+        )
+
+        cost_matrix[row, gating_distance > gating_threshold] = np.inf
+
+    return cost_matrix
