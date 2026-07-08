@@ -151,3 +151,56 @@ def iou_distance(
     iou = bbox_iou(track_boxes, det_boxes)
 
     return 1.0 - iou
+
+def linear_assignment(
+    cost_matrix: np.ndarray,
+    thresh: float,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Solve the Linear Assignment Problem using LAPJV.
+
+    Args:
+        cost_matrix:
+            Cost matrix of shape (N_tracks, N_detections).
+
+        thresh:
+            Maximum allowed matching cost.
+
+    Returns:
+        matches:
+            ndarray of shape (K,2)
+
+        unmatched_tracks:
+            ndarray
+
+        unmatched_detections:
+            ndarray
+    """
+
+    if cost_matrix.size == 0:
+        return (
+            np.empty((0, 2), dtype=np.int32),
+            np.arange(cost_matrix.shape[0]),
+            np.arange(cost_matrix.shape[1]),
+        )
+
+    _, x, y = lap.lapjv(
+        cost_matrix,
+        extend_cost=True,
+        cost_limit=thresh,
+    )
+
+    matches = [
+        [i, j]
+        for i, j in enumerate(x)
+        if j >= 0
+    ]
+
+    unmatched_tracks = np.where(x < 0)[0]
+    unmatched_detections = np.where(y < 0)[0]
+
+    return (
+        np.asarray(matches, dtype=np.int32),
+        unmatched_tracks,
+        unmatched_detections,
+    )
