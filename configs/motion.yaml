@@ -59,3 +59,14 @@ output_3d:
   # Mesh export
   mesh_format: ["ply", "obj"]    # Export formats
   mesh_color: [0.65, 0.74, 0.86] # Default mesh color (RGB float)
+
+# -------------------------------------------------------------------------
+# SMPL Renderer Settings
+# -------------------------------------------------------------------------
+smpl_renderer:
+  use_pyrender: true             # Prefer pyrender for Phong-shaded output
+  use_geometry_fallback: true    # Always have Tier 2 (GeometrySMPL) available
+  mesh_color_rgb: [0.66, 0.74, 0.86]  # Grey-blue (reference image style)
+  overlay_alpha: 0.72            # Mesh blend on original frame
+  camera_distance: 2.5           # Isolated view camera distance
+  rotation_y_deg: 25.0           # Isolated view Y-rotation (3/4 angle)

@@ -46,10 +46,10 @@ mediapipe==0.10.14
 # 3D Human Motion Recovery — 4D-Humans (HMR 2.0)
 # ------------------------------------------------------------------
 # Install via: pip install git+https://github.com/shubham-goel/4D-Humans
-# Or install from the local clone added as submodule.
-# The wrapper in models/gvhmr_wrapper.py supports both.
-# smplx>=0.1.28               # SMPL body model
-# plyfile>=1.0.2              # PLY mesh I/O (also via trimesh)
+# The wrapper in models/smpl_mesh_model.py auto-detects and uses it if present.
+# smplx is used for SMPL body model (optional but recommended for best results):
+smplx>=0.1.28               # SMPL/SMPL-X body model
+plyfile>=1.0.2              # PLY mesh I/O (also via trimesh)
 
 # ------------------------------------------------------------------
 # 3D Math & Scientific Computing

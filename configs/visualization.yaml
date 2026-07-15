@@ -115,8 +115,25 @@ fps_overlay:
   text_color: [0, 255, 0]
   alpha: 0.5
 
-# ─── Shot Indicator ───────────────────────────────────────────────────────────
+# ─── Shot Indicator ──────────────────────────────────────────────────────────────────────────────
 shot_indicator:
   enabled: true
   flash_color: [255, 0, 255]
   flash_duration_frames: 3
+
+# ─── SMPL Side-by-Side (08_smpl_sidebyside.mp4 — reference image output) ───────────
+# LEFT panel: original video + grey SMPL mesh overlaid
+# RIGHT panel: white canvas + checkerboard floor + isolated 3D mesh
+smpl_sidebyside:
+  enabled: true
+  panel_width: 960              # Width of each half-panel
+  panel_height: 540             # Height of each half-panel
+  overlay_alpha: 0.72           # Mesh opacity on left (original video) panel
+  mesh_color_bgr: [168, 192, 210]  # BGR grey-blue (matches reference image)
+  camera_distance: 2.5          # pyrender camera distance (metres)
+  rotation_y_deg: 25.0          # Y-rotation for 3/4 view on isolated panel
+  floor_frac: 0.28              # Fraction of right panel used for checkerboard
+  bg_color: [245, 245, 245]     # Right panel background (near-white)
+  divider_color: [120, 120, 120] # Thin divider between panels
+  show_labels: true             # Show "SMPL Mesh — Original" / "Isolated" headers
+  label_height: 32              # Header bar height (pixels)

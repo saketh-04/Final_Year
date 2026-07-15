@@ -38,6 +38,7 @@ from visualization.overlay_renderer import (
     ComparisonRenderer, OverlayRenderer, ResearchDemoRenderer,
 )
 from visualization.skeleton_renderer import SkeletonRenderer
+from visualization.smpl_side_by_side import SMPLSideBySideRenderer
 from visualization.trajectory_renderer import TrajectoryRenderer
 from visualization.video_renderer import DetectionRenderer, TrackingRenderer
 
@@ -79,6 +80,8 @@ class Visualizer:
         traj_cfg  = self._cfg.get("trajectory", {})
         comp_cfg  = self._cfg.get("comparison", {})
 
+        smpl_sbs_cfg = self._cfg.get("smpl_sidebyside", {})
+
         self._det_renderer    = DetectionRenderer(det_cfg)
         self._track_renderer  = TrackingRenderer(track_cfg)
         self._skeleton_renderer = SkeletonRenderer(pose_cfg, skeleton_pairs=pose_skeleton_pairs)
@@ -89,6 +92,15 @@ class Visualizer:
 
         # Research demo side-by-side renderer (07_final)
         self._demo_renderer = ResearchDemoRenderer(comp_cfg)
+
+        # SMPL side-by-side renderer (08_smpl_sidebyside) — reference image output
+        self._smpl_sbs_renderer = SMPLSideBySideRenderer(
+            config=smpl_sbs_cfg,
+            panel_w=int(smpl_sbs_cfg.get("panel_width",  self._cfg.get("global", {}).get("output_width",  1280) // 2)),
+            panel_h=int(smpl_sbs_cfg.get("panel_height", self._cfg.get("global", {}).get("output_height", 720))),
+        )
+        self._smpl_sbs_renderer.initialize()
+        self._smpl_sbs_enabled: bool = smpl_sbs_cfg.get("enabled", True)
 
         self._detection_enabled:    bool = det_cfg.get("enabled", True)
         self._tracking_enabled:     bool = track_cfg.get("enabled", True)
@@ -212,6 +224,16 @@ class Visualizer:
             )
             dw, dh = demo_frame.shape[1], demo_frame.shape[0]
             _writer("07_final", out_w=dw, out_h=dh).write(demo_frame)
+
+            # Stage 08 — SMPL Side-by-Side (reference image output)
+            # LEFT: original frame + grey SMPL mesh overlay
+            # RIGHT: white canvas + checkerboard floor + isolated 3D mesh
+            if self._smpl_sbs_enabled and smpl_f:
+                sbs_frame = self._smpl_sbs_renderer.render_frame(
+                    frame, smpl_f, bboxes, frame_idx=frame_idx, fps=fps
+                )
+                sw, sh = sbs_frame.shape[1], sbs_frame.shape[0]
+                _writer("08_smpl_sidebyside", out_w=sw, out_h=sh).write(sbs_frame)
 
             # Comparison 4-panel
             if self._comparison_enabled:

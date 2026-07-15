@@ -178,21 +178,31 @@ class ModelFactory:
     def create_motion_recovery(self) -> BaseModel:
         """Create and return a 3D motion recovery model.
 
-        Reads ``cfg.motion.backend`` (``hmr2`` or ``gvhmr``).
-        Always falls back to the pseudo-3D heuristic if the selected
-        backend cannot be loaded.
+        Uses :class:`~models.smpl_mesh_model.SMPLMeshModel` which implements
+        a 3-tier strategy:
+          - Tier 1: HMR 2.0 (4D-Humans) if installed — full SMPL prediction
+          - Tier 2: GeometrySMPL — rigid-fit of neutral SMPL template (always works)
+          - Tier 3: Stick-figure — only if pyrender is also missing
+
+        Reads ``cfg.motion`` for backend settings.
 
         Returns:
-            Initialised :class:`~models.gvhmr_wrapper.MotionRecoveryModel`.
+            Initialised :class:`~models.smpl_mesh_model.SMPLMeshModel`.
         """
         motion_cfg = _cfg_to_dict(self._cfg.get("motion", {})) if isinstance(self._cfg, dict) \
             else _cfg_to_dict(getattr(self._cfg, "motion", {}))
 
-        log.info("ModelFactory: creating motion recovery model (device={})", self._device)
+        log.info(
+            "ModelFactory: creating SMPLMeshModel (3-tier HMR2→GeometrySMPL→Fallback, device={})",
+            self._device,
+        )
 
-        from models.gvhmr_wrapper import MotionRecoveryModel
-        model = MotionRecoveryModel(device=self._device, config=motion_cfg)
+        from models.smpl_mesh_model import SMPLMeshModel
+        model = SMPLMeshModel(device=self._device, config=motion_cfg)
         model.initialize()
+        log.info(
+            "ModelFactory: SMPLMeshModel ready — active_tier={}", model.active_tier
+        )
         return model
 
     # ------------------------------------------------------------------
